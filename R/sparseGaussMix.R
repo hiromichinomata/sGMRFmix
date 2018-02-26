@@ -57,10 +57,12 @@ sparseGaussMix <- function(x, K, rho, m0 = rep(0, M), lambda0 = 1,
     # Eq. 33 (Sec. 4.2)
     x_mat <- as.matrix(x)
     Sigma <- lapply(1:K, function(k) {
-      lapply(1:N, function(i) {
+      tmp <- lapply(1:N, function(i) {
         row <- x_mat[i, ]
         r[[k]][i] * tcrossprod(row - x_bar[[k]])
-      }) %>% Reduce("+", .) %>% { . / Nk[[k]] }
+      })
+      tmp <- Reduce("+", tmp)
+      tmp / Nk[[k]]
     })
 
     # Eq. 34 (Sec. 4.2)

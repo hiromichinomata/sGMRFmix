@@ -4,7 +4,7 @@
 \alias{plot_multivariate_data}
 \title{Plot multivariate data}
 \usage{
-plot_multivariate_data(df)
+plot_multivariate_data(df, label = NULL, point_size = 1)
 }
 \description{
 Plot multivariate data

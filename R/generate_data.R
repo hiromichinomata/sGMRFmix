@@ -63,11 +63,15 @@ generate_test_data <- function() {
 #'
 #' @export
 generate_test_labels <- function() {
-  matrix(c(
+  test_labels <- matrix(c(
     rep(FALSE, 500), rep(TRUE, 500),
     rep(FALSE, 500), rep(TRUE, 500),
     rep(FALSE, 500), rep(TRUE, 500),
     rep(FALSE, 500), rep(TRUE, 500),
     rep(FALSE, 1000)
   ), ncol = 5)
+  test_labels <- data.frame(test_labels)
+  colnames(test_labels) <- paste0("x", 1:5)
+
+  test_labels
 }

@@ -13,6 +13,7 @@ GMRFmix <- function(x, pi, m, A, alpha = rep(1, K), max_iter = 400,
   u <- compute_mean(x, m, A, w)
 
   theta_mat <- matrix(nrow = M, ncol = K)
+  h_mat <- matrix(nrow = N, ncol = M)
   for (i in 1:M) {
     Nk <- pi * N
     loglik <- -Inf
@@ -40,6 +41,7 @@ GMRFmix <- function(x, pi, m, A, alpha = rep(1, K), max_iter = 400,
       loglik_gap <- abs(last_loglik - loglik)
       if (loglik_gap < tol) {
         theta_mat[i, ] <- theta
+        h_mat[, i] <- apply(mat, 1, function(row) which.max(row))
         break
       }
 
@@ -49,11 +51,14 @@ GMRFmix <- function(x, pi, m, A, alpha = rep(1, K), max_iter = 400,
                            max_iter, loglik_gap)
         warning(message)
         theta_mat[i, ] <- theta
+        h_mat[, i] <- apply(mat, 1, function(row) which.max(row))
         break
       }
     }
     if (verbose) setTxtProgressBar(progress_bar, i)
   }
+  H <- as.data.frame(h_mat)
+  colnames(H) <- colnames(x)
 
-  theta_mat
+  list(theta = theta_mat, H = H)
 }

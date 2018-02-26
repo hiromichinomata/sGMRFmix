@@ -5,7 +5,7 @@
 \title{Sparse Gaussian Markov Random Field Mixtures}
 \usage{
 sGMRFmix(x, K, rho, m0 = rep(0, M), lambda0 = 1, pi_threshold = 1/K/100,
-  max_iter = 400, tol = 0.01, verbose = TRUE)
+  max_iter = 500, tol = 0.1, verbose = TRUE)
 }
 \description{
 Sparse Gaussian Markov Random Field Mixtures
