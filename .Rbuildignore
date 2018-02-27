@@ -2,3 +2,8 @@
 ^\.Rproj\.user$
 ^README\.Rmd$
 ^README-.*\.png$
+^README-images/.*$
+^README_cache/.*$
+^README\.html$
+^README\.md$
+^\.travis\.yml$

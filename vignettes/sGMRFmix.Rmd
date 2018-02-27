@@ -1,18 +1,19 @@
 ---
-output:
-  md_document:
-    variant: markdown_github
-  html_document:
-    keep_md: true
+title: "Sparse Gaussian MRF Mixtures for Anomaly Detection"
+author: "Koji Makiyama (@hoxo_m)"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Sparse Gaussian MRF Mixtures for Anomaly Detection}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
-
-<!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "README-images/",
+  fig.path = "sGMRFmix-images/",
   message = FALSE,
   fig.width = 5,
   fig.height = 4
@@ -21,15 +22,6 @@ library(ggplot2)
 theme_set(theme_bw(base_family = "HiraKakuProN-W3"))
 library(ModelMetrics)
 ```
-
-# Sparse Gaussian MRF Mixtures for Anomaly Detection
-
-#### *Koji Makiyama (@hoxo_m)*
-
-[![Travis-CI Build Status](https://travis-ci.org/hoxo-m/sGMRFmix.svg?branch=master)](https://travis-ci.org/hoxo-m/sGMRFmix)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/sGMRFmix)](https://cran.r-project.org/package=sGMRFmix)
-[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/sGMRFmix)](http://cranlogs.r-pkg.org/badges/sGMRFmix)
-[![Coverage Status](https://img.shields.io/coveralls/hoxo-m/sGMRFmix.svg)](https://coveralls.io/r/hoxo-m/sGMRFmix?branch=master)
 
 ## 1 Overview
 

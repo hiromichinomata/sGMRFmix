@@ -1,13 +1,12 @@
-#' Sparse mixture of sparse graphical models
-#'
 #' @importFrom glasso glasso
 #' @importFrom mvtnorm dmvnorm
-#'
-#' @export
+#' @importFrom stats cov
+#' @importFrom utils txtProgressBar setTxtProgressBar
 sparseGaussMix <- function(x, K, rho, m0 = rep(0, M), lambda0 = 1,
-                           max_iter = 400, tol = 1e-2, verbose = TRUE) {
+                           max_iter = 500, tol = 1e-1, verbose = TRUE) {
   if (verbose) progress_bar <- txtProgressBar(0, max_iter, style=3)
-  c(N, M) %<-% dim(x)
+  N <- nrow(x)
+  M <- ncol(x)
 
   pi <- rep(1/K, K)
   lambda <- pi * N

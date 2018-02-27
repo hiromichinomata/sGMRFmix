@@ -1,13 +1,14 @@
-#' Gaussian Markov random field mixtures
-#'
 #' @importFrom utils txtProgressBar setTxtProgressBar
-#'
-#' @export
-GMRFmix <- function(x, pi, m, A, alpha = rep(1, K), max_iter = 400,
-                    tol = 1e-2, verbose = TRUE) {
-  c(N, M) %<-% dim(x)
+GMRFmix <- function(x, pi, m, A, alpha = NULL, max_iter = 500,
+                    tol = 1e-1, verbose = TRUE) {
+  N <- nrow(x)
+  M <- ncol(x)
+
   if (verbose) progress_bar <- txtProgressBar(0, M, style=3)
   K <- length(pi)
+
+  if (is.null(alpha)) alpha <- rep(1, K)
+  if (length(alpha) != K) stop("length of alpha must equal Kest")
 
   w <- compute_variance(A)
   u <- compute_mean(x, m, A, w)
@@ -26,7 +27,9 @@ GMRFmix <- function(x, pi, m, A, alpha = rep(1, K), max_iter = 400,
       # Eq. 16 (Sec. 3.2)
       theta <- exp(digamma(a) - digamma(a_bar))
 
-      c(g, mat) %<-% compute_gating_function(x, theta, u, w, i)
+      gating <- compute_gating_function(x, theta, u, w, i)
+      g <- gating$g
+      mat <- gating$mat
 
       # Eq. 18 (Sec. 3.2)
       Nk <- colSums(g)

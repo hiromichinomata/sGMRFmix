@@ -4,6 +4,14 @@ Sparse Gaussian MRF Mixtures for Anomaly Detection
 
 #### *Koji Makiyama (@hoxo\_m)*
 
+[![Travis-CI Build
+Status](https://travis-ci.org/hoxo-m/sGMRFmix.svg?branch=master)](https://travis-ci.org/hoxo-m/sGMRFmix)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/sGMRFmix)](https://cran.r-project.org/package=sGMRFmix)
+[![CRAN
+Downloads](http://cranlogs.r-pkg.org/badges/sGMRFmix)](http://cranlogs.r-pkg.org/badges/sGMRFmix)
+[![Coverage
+Status](https://img.shields.io/coveralls/hoxo-m/sGMRFmix.svg)](https://coveralls.io/r/hoxo-m/sGMRFmix?branch=master)
+
 1 Overview
 ----------
 
@@ -12,7 +20,7 @@ presented by Ide et al. (2016). It is a novel anomaly detection method
 for multivariate noisy sensor data. It can automatically handle multiple
 operational modes. And it can also compute variable-wise anomaly scores.
 
-First, we ready a multivariate training data that contains no anomaly
+First, we prepare a multivariate training data that contains no anomaly
 observations. It consists of four parts and repeats two operational
 modes.
 
@@ -25,7 +33,7 @@ plot_multivariate_data(train_data)
 
 ![](README-images/unnamed-chunk-2-1.png)
 
-Second, we ready a multivariate test data that contains some anomaly
+Second, we prepare a multivariate test data that contains some anomaly
 values. It consists of 500 normal observations and 500 anomaly
 observations. The normal part in the test data consists of two
 operational modes that also have seen in the training data. Note that
@@ -153,7 +161,7 @@ plot_multivariate_data(test_data, label = test_labels)
 
 ![](README-images/unnamed-chunk-7-1.png)
 
-### 3.3 Fitting the Model
+### 3.3 Fitting Model
 
 The package provides the `sGMRFmix()` function to fit the model named
 *Sparse Gaussian Markov Random Field Mixtures* (Ide et al., 2016). It
@@ -183,7 +191,7 @@ mixtures `K-est` has been sparsely estimated 2. The weights of the
 mixtures are displayed as `pi`. They are near 0.5. The result contains
 other estimated parameters such as `m`, `A`, `theta`.
 
-### 3.4 Tuning the Hyperparameter `rho`
+### 3.4 Tuning Hyperparameter `rho`
 
 You can fit the model without labeled data, but you should prepare a
 labeled test data to tell the model what the anomalies are. To tell it,
@@ -296,7 +304,59 @@ plot_multivariate_data(test_data, label = is_anomaly)
 
 ![](README-images/unnamed-chunk-15-1.png)
 
-### 3.6 Operational Modes
+### 3.6 Moving Average of Anomaly Scores
+
+In the above example, you might think the F-measure is low. There is
+another way if you are interested in whether anomalies occur densely
+rather than individual one.
+
+You can calculate moving average (or called rolling mean) for the
+anomaly scores by indicating window size.
+
+``` r
+window_size <- 20
+
+df <- data.frame()
+for (i in seq_len(n_split)) {
+  anomaly_score <- compute_anomaly_score(fit, split_test_data[[i]], window_size)
+  f_measure <- double(length(threshold_candidates))
+  for (j in seq_along(threshold_candidates)) {
+    f1 <- f1Score(unlist(split_test_labels[[i]]), unlist(anomaly_score), 
+                  cutoff = threshold_candidates[j])
+    f_measure[j] <- f1
+  }
+  df <- rbind(df, data.frame(cutoff = threshold_candidates, f_measure = f_measure))
+}
+```
+
+``` r
+ggplot(df, aes(cutoff, f_measure)) + geom_point() +
+  stat_summary(fun.y = mean, geom = "line", color = "red") + scale_x_log10()
+```
+
+![](README-images/unnamed-chunk-17-1.png)
+
+``` r
+df %>% group_by(cutoff) %>% 
+  summarise(mean_f_measure = mean(f_measure)) %>% 
+  filter(mean_f_measure == max(mean_f_measure))
+#> # A tibble: 1 x 2
+#>   cutoff mean_f_measure
+#>    <dbl>          <dbl>
+#> 1   1.96          0.870
+```
+
+``` r
+anomaly_scores <- compute_anomaly_score(fit, test_data, window_size)
+is_anomaly <- anomaly_scores > 1.96
+plot_multivariate_data(test_data, label = is_anomaly)
+```
+
+![](README-images/unnamed-chunk-19-1.png)
+
+You can see that we obtained an anomaly detector with high performance.
+
+### 3.7 Structures of Operational Modes
 
 In the above, the model has identified that synthetic data consists of
 two operational modes. We can see it as follows:
@@ -322,7 +382,7 @@ head(fit$mode, 10)
 plot_multivariate_data(train_data, label = fit$mode)
 ```
 
-![](README-images/unnamed-chunk-18-1.png)
+![](README-images/unnamed-chunk-22-1.png)
 
 Using this, we can show the correlation structures for each mode.
 
@@ -335,7 +395,7 @@ pairs(true_mode1_values, main="True Mode 1 Structure")
 pairs(estimated_mode1_values, main="Estimated Mode 1 Structure")
 ```
 
-<img src="README-images/unnamed-chunk-19-1.png" width="45%" /><img src="README-images/unnamed-chunk-19-2.png" width="45%" />
+<img src="README-images/unnamed-chunk-23-1.png" width="45%" /><img src="README-images/unnamed-chunk-23-2.png" width="45%" />
 
 ``` r
 inds_mode2 <- c(251:500, 751:1000)
@@ -346,13 +406,27 @@ pairs(true_mode2_values, main="True Mode 2 Structure")
 pairs(estimated_mode2_values, main="Estimated Mode 2 Structure")
 ```
 
-<img src="README-images/unnamed-chunk-20-1.png" width="45%" /><img src="README-images/unnamed-chunk-20-2.png" width="45%" />
+<img src="README-images/unnamed-chunk-24-1.png" width="45%" /><img src="README-images/unnamed-chunk-24-2.png" width="45%" />
 
 In reality, true structures are unknown. We should check estimated
-structures and decide whether it is reasonable.
+structures and consider whether it is reasonable.
 
-References
-----------
+You can also see the structure of the anomaly state. To compare it with
+the normal operating modes will be helpful to investigate what caused
+the anomalies.
+
+``` r
+true_anomlay <- test_data[501:1000, ]
+estimated_anomaly <- test_data[is_anomaly, ]
+
+pairs(true_anomlay, main="True Anomaly Structure")
+pairs(estimated_anomaly, main="Estimated Anomaly Structure")
+```
+
+<img src="README-images/unnamed-chunk-25-1.png" width="45%" /><img src="README-images/unnamed-chunk-25-2.png" width="45%" />
+
+Reference
+---------
 
 -   T. Ide, A .Khandelwal, J .Kalagnanam, **Sparse Gaussian Markov
     Random Field Mixtures for Anomaly Detection**, IEEE 16th

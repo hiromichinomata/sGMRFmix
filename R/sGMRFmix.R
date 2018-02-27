@@ -1,10 +1,29 @@
-#' @import zeallot
-NULL
-
 #' Sparse Gaussian Markov Random Field Mixtures
 #'
+#' @param x data.frame. A training data.
+#' @param K integer. Number of mixture components. Set a large enough number
+#'          because the algorithm identifies major dependency patterns from
+#'          the data via the sparse mixture model.
+#' @param rho double. Constant that multiplies the penalty term. An optimal
+#'          value should be determined together with the threshold on the
+#'          anomaly score, so the performance of anomaly detection is maximized.
+#' @param m0 a numeric vector. Location parameter of Gauss-Laplace prior.
+#'          Keep default if no prior information is available.
+#' @param lambda0 double. Coefficient for scale parameter of Gauss-Laplace
+#'          prior. Keep default if no prior information is available.
+#' @param alpha double. Concentration parameter of Dirichlet prior.
+#'          Keep default if no prior information is available.
+#' @param pi_threshold double. Threshold to decide a number of states.
+#'          If pi < pi_threshold, the states are rejected in the sense of
+#'          sparse estimation.
+#' @param max_iter integer. Maximum number of iterations.
+#' @param tol double. The tolerance to declare convergence.
+#' @param verbose logical.
+#'
+#' @return sGMRFmix object
+#'
 #' @export
-sGMRFmix <- function(x, K, rho, m0 = rep(0, M), lambda0 = 1,
+sGMRFmix <- function(x, K, rho, m0 = rep(0, M), lambda0 = 1, alpha = NULL,
                      pi_threshold = 1/K/100, max_iter = 500, tol = 1e-1,
                      verbose = TRUE) {
   if (!is.data.frame(x)) {
@@ -12,15 +31,21 @@ sGMRFmix <- function(x, K, rho, m0 = rep(0, M), lambda0 = 1,
   }
   M <- ncol(x)
   if (verbose) message("################## sparseGaussMix #######################")
-  c(pi2, m, A) %<-% sparseGaussMix(x, K = K, rho = rho, m0 = m0,
-                                   lambda0 = lambda0, max_iter = max_iter,
-                                   tol = tol, verbose = verbose)
-  pi <- pi2 # Work around for bug of zeallot
+  fit <- sparseGaussMix(x, K = K, rho = rho, m0 = m0,
+                        lambda0 = lambda0, max_iter = max_iter,
+                        tol = tol, verbose = verbose)
+  pi <- fit$pi
+  m <- fit$m
+  A <- fit$A
   if (verbose) message("\n################## GMRFmix ##############################")
   ind <- pi >= pi_threshold
-  c(pi, m, A) %<-% list(pi[ind], m[ind], A[ind])
-  c(theta, H) %<-% GMRFmix(x, pi = pi, m = m, A = A,
-                           max_iter = max_iter, tol = tol, verbose = verbose)
+  pi <- pi[ind]
+  m <- m[ind]
+  A <- A[ind]
+  fit <- GMRFmix(x, pi = pi, m = m, A = A, alpha = alpha,
+                 max_iter = max_iter, tol = tol, verbose = verbose)
+  theta <- fit$theta
+  H <- fit$H
   if (verbose) message("\n################## Finished #############################")
   mode <- apply(H, 1, function(row) {
     t <- table(row)

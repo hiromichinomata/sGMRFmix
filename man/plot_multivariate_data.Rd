@@ -4,7 +4,17 @@
 \alias{plot_multivariate_data}
 \title{Plot multivariate data}
 \usage{
-plot_multivariate_data(df, label = NULL, point_size = 1)
+plot_multivariate_data(df, label = NULL, point_size = 1L)
+}
+\arguments{
+\item{df}{data.frame of multivariate data}
+
+\item{label}{data.frame of label for each variables. Or vector of label for each observation.}
+
+\item{point_size}{an integer point size}
+}
+\value{
+ggplot2 object
 }
 \description{
 Plot multivariate data
