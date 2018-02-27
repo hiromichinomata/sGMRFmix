@@ -65,7 +65,13 @@ scores.
 2 Installation
 --------------
 
-You can install the package from GitHub.
+You can install the **sGMRFmix** package from CRAN.
+
+``` r
+install.packages("sGMRFmix")
+```
+
+You can also install the package from GitHub.
 
 ``` r
 install.packages("devtools") # if you have not installed "devtools" package
