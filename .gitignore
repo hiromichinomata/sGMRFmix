@@ -5,3 +5,4 @@
 README.html
 README_cache/*
 inst/doc
+vignettes/*_cache/*
