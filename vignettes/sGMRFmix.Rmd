@@ -53,7 +53,7 @@ plot_multivariate_data(test_data)
 We input the training data to the `sGMRFmix()` function to learn the two operational modes.
 Then we compute variable-wise anomaly scores for test data using the result.
 
-```{r cache=TRUE}
+```{r}
 fit <- sGMRFmix(train_data, K = 7, rho = 1.3, verbose = FALSE)
 anomaly_score <- compute_anomaly_score(fit, test_data)
 plot_multivariate_data(anomaly_score) + ylim(0, 30)
@@ -162,7 +162,7 @@ To tell it, you have no choice but to tune the hyperparameter `rho`.
 To avoid overfitting, you can use cross-validation.
 We measure the performance of the anomaly detection by ROC-AUC.
 
-```{r cache=TRUE}
+```{r}
 n_split <- 5
 split_block <- sample(n_split, size = nrow(test_data), replace = TRUE)
 split_test_data <- split(test_data, split_block)
@@ -204,7 +204,7 @@ We have obtained optimal hyperparameter `rho.`
 Next, let us investigate optimal threshold value for anomaly scores.
 We measure the performance of the anomaly detection by F-measure.
 
-```{r cache=TRUE}
+```{r}
 optimal_rho <- 1.29
 fit <- sGMRFmix(train_data, K = 7, rho = optimal_rho, verbose = FALSE)
 
