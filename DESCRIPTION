@@ -1,7 +1,7 @@
 Package: sGMRFmix
 Type: Package
 Title: Sparse Gaussian Markov Random Field Mixtures for Anomaly Detection
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: person("Koji", "Makiyama", email = "hoxo.smile@gmail.com", role = c("cre", "aut"))
 Description: An implementation of sparse Gaussian Markov random field mixtures.
   It provides a novel anomaly detection method for multivariate noisy sensor data.
