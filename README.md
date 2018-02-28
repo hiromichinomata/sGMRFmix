@@ -21,8 +21,8 @@ for multivariate noisy sensor data. It can automatically handle multiple
 operational modes. And it can also compute variable-wise anomaly scores.
 
 First, we prepare a multivariate training data that contains no anomaly
-observations. It consists of four parts and repeats two operational
-modes.
+observations. Here we generate a data that consists of four parts and
+repeats two operational modes.
 
 ``` r
 library(sGMRFmix)
@@ -34,10 +34,10 @@ plot_multivariate_data(train_data)
 ![](README-images/unnamed-chunk-2-1.png)
 
 Second, we prepare a multivariate test data that contains some anomaly
-values. It consists of 500 normal observations and 500 anomaly
-observations. The normal part in the test data consists of two
-operational modes that also have seen in the training data. Note that
-the variable `x5` has no difference in the normal and anomaly part.
+values. Here we generate a data that consists of 500 normal observations
+and 500 anomaly observations. The normal part in the test data consists
+of two operational modes that also have seen in the training data. Note
+that the variable `x5` has no difference in the normal and anomaly part.
 
 ``` r
 test_data <- generate_test_data()
@@ -105,12 +105,12 @@ There are two hyperparameters as below.
 -   `rho` is a constant that multiplies to the penalty term in the
     model.
 
-You should set `K` a large enough number because the algorithm
+You only need to set `K` a large enough number because the algorithm
 identifies major dependency patterns from the data via the sparse
 mixture model.
 
-You should determine `rho` an optimal value to maximize the performance
-of anomaly detection.
+On the other hand, you should determine `rho` an optimal value to
+maximize the performance of anomaly detection.
 
 ### 3.2 Data
 
@@ -120,7 +120,7 @@ To fit the model, you must prepare two kinds of data as follows:
 -   Labeled test data that contains anomalies to tuning the
     hyperparameter `rho`.
 
-The package provides functions to generate synthetic data.
+The package provides several functions to generate synthetic data.
 
 ``` r
 set.seed(314)
@@ -169,9 +169,9 @@ plot_multivariate_data(test_data, label = test_labels)
 
 ### 3.3 Fitting Model
 
-The package provides the `sGMRFmix()` function to fit the model named
+The package provides a function `sGMRFmix()` to fit the model named
 *Sparse Gaussian Markov Random Field Mixtures* (Ide et al., 2016). It
-can automatically handle multiple operational modes. And it can also
+can automatically handle multiple operational modes and allows to
 compute variable-wise anomaly scores.
 
 ``` r
@@ -193,14 +193,15 @@ fit
     #>   m, A, theta, H, mode
 
 As the result of we set `K` to 7 and fit the model, the number of
-mixtures `K-est` has been sparsely estimated 2. The weights of the
-mixtures are displayed as `pi`. They are near 0.5. The result contains
-other estimated parameters such as `m`, `A`, `theta`.
+mixtures `Kest = 2` has been obtained by the sparse estimation. The
+estimated weights of the mixtures are displayed as `pi`. They are near
+0.5. The result contains other estimated parameters such as `m`, `A`,
+`theta`.
 
 ### 3.4 Tuning Hyperparameter `rho`
 
 You can fit the model without labeled data, but you should prepare a
-labeled test data to tell the model what the anomalies are. To tell it,
+labeled test data to tell the model what the anomalies are. To do it,
 you have no choice but to tune the hyperparameter `rho`. To avoid
 overfitting, you can use cross-validation. We measure the performance of
 the anomaly detection by ROC-AUC.
@@ -254,8 +255,8 @@ df %>% group_by(rho) %>% summarise(mean_auc = mean(auc)) %>%
 #> 10 10.0      0.655 .
 ```
 
-Optimal `rho` value that has the best performance to detect anomalies we
-think is 1.29.
+Optimal `rho` value that has the best performance to detect the
+anomalies is 1.29.
 
 ### 3.5 Anomaly Detection
 
@@ -317,7 +318,7 @@ another way if you are interested in whether anomalies occur densely
 rather than individual one.
 
 You can calculate moving average (or called rolling mean) for the
-anomaly scores by indicating window size.
+anomaly scores by passing window size.
 
 ``` r
 window_size <- 20
@@ -364,8 +365,8 @@ You can see that we obtained an anomaly detector with high performance.
 
 ### 3.7 Structures of Operational Modes
 
-In the above, the model has identified that synthetic data consists of
-two operational modes. We can see it as follows:
+In the above, the model has identified that the synthetic data consists
+of two operational modes. We can see it as follows:
 
 ``` r
 fit$Kest
@@ -390,7 +391,7 @@ plot_multivariate_data(train_data, label = fit$mode)
 
 ![](README-images/unnamed-chunk-22-1.png)
 
-Using this, we can show the correlation structures for each mode.
+Using it, you can see the correlation structures for each mode.
 
 ``` r
 inds_mode1 <- c(1:250, 501:750)
@@ -414,7 +415,7 @@ pairs(estimated_mode2_values, main="Estimated Mode 2 Structure")
 
 <img src="README-images/unnamed-chunk-24-1.png" width="45%" /><img src="README-images/unnamed-chunk-24-2.png" width="45%" />
 
-In reality, true structures are unknown. We should check estimated
+In reality, true structures are unknown. You should check estimated
 structures and consider whether it is reasonable.
 
 You can also see the structure of the anomaly state. To compare it with
