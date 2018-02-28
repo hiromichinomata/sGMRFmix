@@ -43,3 +43,12 @@ sGMRFmix object
 \description{
 Sparse Gaussian Markov Random Field Mixtures
 }
+\examples{
+library(sGMRFmix)
+
+set.seed(314)
+train_data <- generate_train_data()
+fit <- sGMRFmix(train_data, K = 7, rho = 10)
+fit
+
+}

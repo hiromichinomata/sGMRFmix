@@ -5,6 +5,18 @@
 #' @param window_size integer.
 #' @param ... additional arguments
 #'
+#' @return matrix of anomaly scores
+#'
+#' @examples
+#' library(sGMRFmix)
+#'
+#' set.seed(314)
+#' train_data <- generate_train_data()
+#' fit <- sGMRFmix(train_data, K = 7, rho = 10)
+#'
+#' test_data <- generate_test_data()
+#' compute_anomaly_score(fit, test_data)
+#'
 #' @export
 compute_anomaly_score <- function(obj, x, window_size = 1L, ...) {
   UseMethod("compute_anomaly_score")

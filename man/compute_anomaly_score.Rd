@@ -15,6 +15,20 @@ compute_anomaly_score(obj, x, window_size = 1L, ...)
 
 \item{...}{additional arguments}
 }
+\value{
+matrix of anomaly scores
+}
 \description{
 Compute anomaly scores
+}
+\examples{
+library(sGMRFmix)
+
+set.seed(314)
+train_data <- generate_train_data()
+fit <- sGMRFmix(train_data, K = 7, rho = 10)
+
+test_data <- generate_test_data()
+compute_anomaly_score(fit, test_data)
+
 }

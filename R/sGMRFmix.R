@@ -22,6 +22,14 @@
 #'
 #' @return sGMRFmix object
 #'
+#' @examples
+#' library(sGMRFmix)
+#'
+#' set.seed(314)
+#' train_data <- generate_train_data()
+#' fit <- sGMRFmix(train_data, K = 7, rho = 10)
+#' fit
+#'
 #' @export
 sGMRFmix <- function(x, K, rho, m0 = rep(0, M), lambda0 = 1, alpha = NULL,
                      pi_threshold = 1/K/100, max_iter = 500, tol = 1e-1,
