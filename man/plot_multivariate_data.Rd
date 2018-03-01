@@ -4,7 +4,8 @@
 \alias{plot_multivariate_data}
 \title{Plot multivariate data}
 \usage{
-plot_multivariate_data(df, label = NULL, point_size = 1L)
+plot_multivariate_data(df, label = NULL, order_by = index(df),
+  guide_title = NULL, fix_scale = FALSE, point_size = 1L)
 }
 \arguments{
 \item{df}{data.frame of multivariate data}
