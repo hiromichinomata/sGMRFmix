@@ -31,15 +31,18 @@
 #' fit
 #'
 #' @export
-sGMRFmix <- function(x, K, rho, m0 = rep(0, M), lambda0 = 1, alpha = NULL,
-                     pi_threshold = 1/K/100, max_iter = 500, tol = 1e-1,
-                     verbose = TRUE) {
-  if (!is.data.frame(x)) {
-    x <- as.data.frame(x)
-  }
+sGMRFmix <- function(x, K, rho, kmeans = FALSE, m0 = rep(0, M), lambda0 = 1,
+                     alpha = NULL, pi_threshold = 1/K/100, max_iter = 500,
+                     tol = 1e-1, verbose = TRUE) {
+  scaled_x <- scale(x)
+  scaled_center <- attr(scaled_x, "scaled:center")
+  scaled_scale <- attr(scaled_x, "scaled:scale")
+
+  x <- data.frame(scaled_x)
   M <- ncol(x)
+  colnames <- colnames(x)
   if (verbose) message("################## sparseGaussMix #######################")
-  fit <- sparseGaussMix(x, K = K, rho = rho, m0 = m0,
+  fit <- sparseGaussMix(x, K = K, rho = rho, kmeans = kmeans, m0 = m0,
                         lambda0 = lambda0, max_iter = max_iter,
                         tol = tol, verbose = verbose)
   pi <- fit$pi
@@ -47,7 +50,8 @@ sGMRFmix <- function(x, K, rho, m0 = rep(0, M), lambda0 = 1, alpha = NULL,
   A <- fit$A
   if (verbose) message("\n################## GMRFmix ##############################")
   ind <- pi >= pi_threshold
-  pi <- pi[ind]
+  pi <- pi[ind] / sum(pi[ind])
+  names(pi) <- seq_along(pi)
   m <- m[ind]
   A <- A[ind]
   fit <- GMRFmix(x, pi = pi, m = m, A = A, alpha = alpha,
@@ -61,7 +65,8 @@ sGMRFmix <- function(x, K, rho, m0 = rep(0, M), lambda0 = 1, alpha = NULL,
   })
   result <- list(x = x, pi = pi, m = m, A = A, theta = theta, H = H, mode = mode,
                  Kest = length(pi), K = K, rho = rho, m0 = m0, lambda0 = lambda0,
-                 pi_threshold = pi_threshold)
+                 pi_threshold = pi_threshold, colnames = colnames,
+                 scaled_center = scaled_center, scaled_scale = scaled_scale)
   class(result) <- "sGMRFmix"
 
   cl <- match.call()
