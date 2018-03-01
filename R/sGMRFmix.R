@@ -7,6 +7,7 @@
 #' @param rho double. Constant that multiplies the penalty term. An optimal
 #'          value should be determined together with the threshold on the
 #'          anomaly score, so the performance of anomaly detection is maximized.
+#' @param kmeans logical.
 #' @param m0 a numeric vector. Location parameter of Gauss-Laplace prior.
 #'          Keep default if no prior information is available.
 #' @param lambda0 double. Coefficient for scale parameter of Gauss-Laplace

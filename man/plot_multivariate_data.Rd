@@ -12,6 +12,12 @@ plot_multivariate_data(df, label = NULL, order_by = index(df),
 
 \item{label}{data.frame of label for each variables. Or vector of label for each observation.}
 
+\item{order_by}{vector.}
+
+\item{guide_title}{character.}
+
+\item{fix_scale}{logical.}
+
 \item{point_size}{an integer point size}
 }
 \value{

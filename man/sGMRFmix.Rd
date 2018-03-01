@@ -19,6 +19,8 @@ the data via the sparse mixture model.}
 value should be determined together with the threshold on the
 anomaly score, so the performance of anomaly detection is maximized.}
 
+\item{kmeans}{logical.}
+
 \item{m0}{a numeric vector. Location parameter of Gauss-Laplace prior.
 Keep default if no prior information is available.}
 

@@ -2,6 +2,9 @@
 #'
 #' @param df data.frame of multivariate data
 #' @param label data.frame of label for each variables. Or vector of label for each observation.
+#' @param order_by vector.
+#' @param guide_title character.
+#' @param fix_scale logical.
 #' @param point_size an integer point size
 #'
 #' @return ggplot2 object
