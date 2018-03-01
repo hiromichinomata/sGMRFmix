@@ -51,9 +51,9 @@ operational modes. Then we compute variable-wise anomaly scores for test
 data using the result.
 
 ``` r
-fit <- sGMRFmix(train_data, K = 7, rho = 1.3, verbose = FALSE)
+fit <- sGMRFmix(train_data, K = 7, rho = 0.8, verbose = FALSE)
 anomaly_score <- compute_anomaly_score(fit, test_data)
-plot_multivariate_data(anomaly_score) + ylim(0, 30)
+plot_multivariate_data(anomaly_score, fix_scale = TRUE) + ylim(NA, 50)
 ```
 
 ![](README-images/unnamed-chunk-4-1.png)
@@ -175,18 +175,18 @@ can automatically handle multiple operational modes and allows to
 compute variable-wise anomaly scores.
 
 ``` r
-fit <- sGMRFmix(train_data, K = 7, rho = 1.3, verbose = FALSE)
+fit <- sGMRFmix(train_data, K = 7, rho = 0.8, verbose = FALSE)
 fit
 ```
 
     #> 
     #> Call:
-    #> sGMRFmix(x = train_data, K = 7, rho = 1.3, verbose = FALSE)
+    #> sGMRFmix(x = train_data, K = 7, rho = 0.8, verbose = FALSE)
     #> 
     #> Data: 1000 x 5 
     #> Parameters:
     #>   K:    7 
-    #>   rho:  1.3 
+    #>   rho:  0.8 
     #> Estimated:
     #>   Kest: 2 
     #>   pi:   0.502 0.498 
@@ -243,20 +243,20 @@ df %>% group_by(rho) %>% summarise(mean_auc = mean(auc)) %>%
 #> # A tibble: 10 x 3
 #>       rho mean_auc max  
 #>     <dbl>    <dbl> <chr>
-#>  1  0.100    0.587 .    
-#>  2  0.167    0.633 .    
-#>  3  0.278    0.630 .    
-#>  4  0.464    0.620 .    
-#>  5  0.774    0.633 .    
-#>  6  1.29     0.663 ***  
-#>  7  2.15     0.662 .    
-#>  8  3.59     0.661 .    
-#>  9  5.99     0.658 .    
-#> 10 10.0      0.655 .
+#>  1  0.100    0.577 .    
+#>  2  0.167    0.580 .    
+#>  3  0.278    0.560 .    
+#>  4  0.464    0.569 .    
+#>  5  0.774    0.659 ***  
+#>  6  1.29     0.656 .    
+#>  7  2.15     0.652 .    
+#>  8  3.59     0.646 .    
+#>  9  5.99     0.635 .    
+#> 10 10.0      0.616 .
 ```
 
 Optimal `rho` value that has the best performance to detect the
-anomalies is 1.29.
+anomalies is 0.774.
 
 ### 3.5 Anomaly Detection
 
@@ -265,7 +265,7 @@ optimal threshold value for anomaly scores. We measure the performance
 of the anomaly detection by F-measure.
 
 ``` r
-optimal_rho <- 1.29
+optimal_rho <- 0.774
 fit <- sGMRFmix(train_data, K = 7, rho = optimal_rho, verbose = FALSE)
 
 threshold_candidates <- 10^seq(-1, 1, length.out = 100)
@@ -296,16 +296,16 @@ df %>% group_by(cutoff) %>%
 #> # A tibble: 1 x 2
 #>   cutoff mean_f_measure
 #>    <dbl>          <dbl>
-#> 1  0.811          0.576
+#> 1   1.71          0.577
 ```
 
-We found optimal threshold is 0.811.
+We found optimal threshold is 1.71.
 
 We can use the value for anomaly detection.
 
 ``` r
 anomaly_scores <- compute_anomaly_score(fit, test_data)
-is_anomaly <- anomaly_scores > 0.811
+is_anomaly <- anomaly_scores > 1.71
 plot_multivariate_data(test_data, label = is_anomaly)
 ```
 
@@ -350,12 +350,12 @@ df %>% group_by(cutoff) %>%
 #> # A tibble: 1 x 2
 #>   cutoff mean_f_measure
 #>    <dbl>          <dbl>
-#> 1   1.96          0.870
+#> 1   2.60          0.899
 ```
 
 ``` r
 anomaly_scores <- compute_anomaly_score(fit, test_data, window_size)
-is_anomaly <- anomaly_scores > 1.96
+is_anomaly <- anomaly_scores > 2.60
 plot_multivariate_data(test_data, label = is_anomaly)
 ```
 
@@ -363,7 +363,7 @@ plot_multivariate_data(test_data, label = is_anomaly)
 
 You can see that we obtained an anomaly detector with high performance.
 
-### 3.7 Structures of Operational Modes
+### 3.7 Structure of Operational Modes
 
 In the above, the model has identified that the synthetic data consists
 of two operational modes. We can see it as follows:
@@ -377,7 +377,8 @@ We can also see the weight indicating how often these modes appear.
 
 ``` r
 fit$pi
-#> [1] 0.5020797 0.4979203
+#>         1         2 
+#> 0.5020808 0.4979192
 ```
 
 Furthermore, we can also see the structure of each mode. `fit$mode` is
@@ -386,12 +387,12 @@ the assigned mode to each observation in the training data.
 ``` r
 head(fit$mode, 10)
 #>  [1] 2 1 1 1 1 1 1 2 1 1
-plot_multivariate_data(train_data, label = fit$mode)
+plot_multivariate_data(train_data, label = fit$mode, guide_title = "Mode")
 ```
 
 ![](README-images/unnamed-chunk-22-1.png)
 
-Using it, you can see the correlation structures for each mode.
+Using it, you can see the correlation structure for each mode.
 
 ``` r
 inds_mode1 <- c(1:250, 501:750)
@@ -415,8 +416,8 @@ pairs(estimated_mode2_values, main="Estimated Mode 2 Structure")
 
 <img src="README-images/unnamed-chunk-24-1.png" width="45%" /><img src="README-images/unnamed-chunk-24-2.png" width="45%" />
 
-In reality, true structures are unknown. You should check estimated
-structures and consider whether it is reasonable.
+In reality, true structure are unknown. You should check estimated
+structure and consider whether it is reasonable.
 
 You can also see the structure of the anomaly state. To compare it with
 the normal operating modes will be helpful to investigate what caused
